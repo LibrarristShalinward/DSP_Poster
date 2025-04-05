@@ -55,6 +55,9 @@ class Item:
     
     def __repr__(self):
         return f"{self.name}(#{self.id}, {self.itype})"
+    
+    def __hash__(self):
+        return self.id
 
 dsp_items = {
     it.id: it for it in sorted(
