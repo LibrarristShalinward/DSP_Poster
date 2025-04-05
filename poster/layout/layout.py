@@ -1,4 +1,4 @@
-from .utils import func2getitem, method2geitem
+from .channel.utils import func2getitem, method2geitem
 from functools import cached_property
 from os.path import dirname, abspath, join
 import yaml
