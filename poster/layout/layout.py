@@ -1,36 +1,9 @@
-# region 格式要求
-# docstring要写成这种形式：
-# """
-# Generate a sequence of points along the parametric elliptical curve.
-
-# Parameters:
-#     a (np.ndarray): Point a, shape (..., 2,).
-#     b (np.ndarray): Point b, shape (..., 2,).
-#     c (np.ndarray): Point c, shape (..., 2,).
-
-# Returns:
-#     np.ndarray: Sequence of points, shape (..., N, 2).
-# """
-# 
-# 运算符（=等）左右不允许直接连接变量名、数字或参数名，须以空格隔开
-# endregion
-
 import yaml
 from os.path import dirname, abspath, join
 from .utils import func2getitem, method2geitem
 
-# 我需要用matplotlib绘制一幅由正方形图标和与x、y轴平行的线段组成的折线连接线组成的海报。其中，图标数量已知，以给定的、与其数量匹配的行数和列数呈矩形阵列排列，其横纵间距与穿行其间的连接线数量有关。
-# 在本文件中，我暂时不考虑图片绘制的具体实现，而是先创建一个布局类Layout，以计算不同图片和连接线的位置
-# 首先，本文件需要导入一个位于同一文件夹下的.yaml文件，该文件用于描述内容示例如下：
-# ```yaml
-# icon: 
-#   size: .6 # 图标大小
-#   border: .1 # 第一行/最后一行图标与海报边界的间距
-# connection: 
-#   gap: .1 # 连接线间距
-#   gap2icon: .2 # 连接线与图标的额外间距(连接线与图标间距等于该值+gap/2)
-#   gap2border: .1 # 连接线与海报边界的额外间距(连接线与海报边界间距等于该值+gap/2)
-# ```
+
+
 class LayoutConfig: 
     """
     布局配置类，用于读取布局配置文件并存储相关参数。
@@ -49,12 +22,6 @@ class LayoutConfig:
         """连接线与图标的额外间距(连接线与图标间距等于该值+gap/2)"""
         self.cgap2border: float = yml['connection']['gap2border']
         """连接线与海报边界的额外间距(连接线与海报边界间距等于该值+gap/2)"""
-        # endregion
-
-        # region 计算属性: 间距
-        # endregion
-
-        # region 计算属性: 图标坐标
         # endregion
 
         # region 计算属性: 连接线节点坐标相关变量
@@ -252,11 +219,11 @@ class Layout:
         获取连接线从图标上方或下方引出时相对图标中心的x坐标
 
         Parameters:
-            idx (int): (将引出几条线，要获取第几条线的坐标)
+            idx (int): (要获取第几条线的坐标, 将引出几条线)
         Returns:
             float: 连接线从图标上方或下方引出时相对图标中心的x坐标
         """
-        return self.cfg.cgap * (idx[1] + (idx[0] - 1) / 2.)
+        return self.cfg.cgap * (idx[0] - (idx[1] - 1) / 2.)
     
     @property
     @method2geitem
@@ -310,34 +277,3 @@ class Layout:
             return x0 + self._con_icon_node[idx], y0
         return wrapper
     # endregion
-
-
-# .utils内容: 
-# ```python
-# """
-# 一些工具函数
-# """
-# from typing import Callable, Generic, TypeVar
-# T = TypeVar('T') # 索引类型
-# RT = TypeVar('RT') # 返回值类型
-# class func2getitem(Generic[T, RT]):
-#     """
-#     将一个函数转换为可以使用索引访问的对象
-#     """
-#     def __init__(self, func: Callable[[T], RT]) -> None:
-#         self.func = func
-
-#     def __getitem__(self, idx: T) -> RT:
-#         return self.func(idx)
-# S = TypeVar('S') # 相当于self的类型
-# def method2geitem(func: Callable[[S, T], RT]) -> Callable[[S], func2getitem[T, RT]]: 
-#     """
-#     将一个方法转换为可以使用索引访问的对象
-#     """
-#     def wrapper_for_property(self_: S) -> func2getitem[T, RT]: 
-#         @func2getitem
-#         def wrapper(idx: T) -> RT:
-#             return func(self_, idx)
-#         return wrapper
-#     return wrapper_for_property
-# ```
