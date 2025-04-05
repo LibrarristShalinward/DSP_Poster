@@ -1,6 +1,7 @@
-import yaml
-from os.path import dirname, abspath, join
 from .utils import func2getitem, method2geitem
+from functools import cached_property
+from os.path import dirname, abspath, join
+import yaml
 
 
 
@@ -36,11 +37,9 @@ cfg = LayoutConfig(
 
 
 
-class Layout:
+class _Layout:
     """
-    Layout类用于计算图标和连接线的位置。
-    图标阵列外，只有左右有连接线，上方无连接线。
-    后续坐标以图片左上角为零点，向右和向上为正方向。
+    _Layout类是Layout类的计算部分
     """
     def __init__(self, 
                 icon_row: int, 
@@ -99,15 +98,22 @@ class Layout:
         """相邻图标中心点间距"""
         # endregion
 
-        # region 计算属性: 连接线节点坐标相关变量
-        # endgion
 
-        # 图像大小
-        self.fig_size = (
+
+class Layout(_Layout): 
+    """
+    Layout类用于计算图标和连接线的位置。
+    图标阵列外，只有左右有连接线，上方无连接线。
+    后续坐标以图片左上角为零点，向右和向上为正方向。
+    """
+    @cached_property
+    def fig_size(self): 
+        """图像大小"""
+        return (
             self.con_pos_x[self.ncol][-1] + self.cfg.cgap / 2 + self.cfg.cgap2border, 
             - self.con_pos_y[self.nrow - 1][-1] + self.cfg.cgap / 2 + self.cfg.cgap2border, 
         )
-    
+
     # region 可索引属性：坐标
     @property
     @method2geitem
