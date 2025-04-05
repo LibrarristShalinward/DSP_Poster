@@ -12,6 +12,9 @@ class Channel(ABC, Generic[T]):
     def __add__(self, con: T): 
         self.cons.add(con)
         return self
+
+    def __len__(self) -> int: 
+        return len(self.cons)
     
 
 

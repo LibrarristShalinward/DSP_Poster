@@ -11,6 +11,7 @@ from .channel import (
 from typing import Generic, Hashable, Iterable, TypeVar
 
 
+
 RolCol = tuple[int, int]
 T = TypeVar("T", bound = Hashable)
 class ChannelCollector(Generic[T]): 
@@ -89,3 +90,29 @@ class ChannelCollector(Generic[T]):
         for s in set(setouts_): 
             for a in set(arrives_): 
                 self.add_con(s, a, item)
+    
+    # 通道宽度需求属性
+    @property
+    def gap_cap(self) -> int: 
+        return max(
+            max(
+                len(c) for c in cs
+            ) for cs in self.gaps
+        )
+    
+    @property
+    def inner_cap(self) -> int: 
+        return max(
+            len(i1.cons) + len(i2.cons) for i1, i2 in zip(
+                self.froms, 
+                self.tos[1:] + [ToChannel(T)]
+            )
+        )
+    
+    @property
+    def left_cap(self) -> int: 
+        return len(self.trunk)
+    
+    @property
+    def right_cap(self) -> int: 
+        return len(self.meta)

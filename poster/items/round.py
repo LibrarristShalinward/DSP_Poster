@@ -84,8 +84,6 @@ class EllipseRound(Round):
         """
         # Ensure a, b, c have the same shape
         a, b, c = np.broadcast_arrays(a, b, c)
-        for i in zip(a, b, c): 
-            print(i)
 
         # Generate N equally spaced t values in [0, pi/2]
         t_values = np.linspace(0, np.pi / 2, self.N).reshape(*(1, ) * (len(a.shape) - 1), -1, 1)
