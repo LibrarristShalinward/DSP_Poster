@@ -1,4 +1,4 @@
-from .collect import ChannelCollector, RolCol
+from .channel import *
 from .layout import Layout
 from typing import Generic, Hashable, TypeVar
 
