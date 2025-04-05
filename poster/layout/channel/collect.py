@@ -4,6 +4,7 @@ from .channel import (
     FromChannel, 
     GapChannel, 
     MetaChannel, 
+    RolCol, 
     SetoutChannel, 
     ToChannel, 
     TrunkChannel, 
@@ -12,7 +13,6 @@ from typing import Generic, Hashable, Iterable, TypeVar
 
 
 
-RolCol = tuple[int, int]
 T = TypeVar("T", bound = Hashable)
 class ChannelCollector(Generic[T]): 
     setouts: list[list[SetoutChannel[T]]]
@@ -28,11 +28,11 @@ class ChannelCollector(Generic[T]):
         ):
         self.nrow, self.ncol = rows, cols
         self.setouts = [[SetoutChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
-        self.froms = [SetoutChannel(t) for _ in range(self.nrow)]
+        self.froms = [FromChannel(t) for _ in range(self.nrow)]
         self.trunk = TrunkChannel(t)
         self.gaps = [[GapChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
         self.meta = MetaChannel(t)
-        self.tos = [SetoutChannel(t) for _ in range(self.nrow)]
+        self.tos = [ToChannel(t) for _ in range(self.nrow)]
         self.arrives = [[ArriveChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
     
     def __legal_setout(self, setout: RolCol): 

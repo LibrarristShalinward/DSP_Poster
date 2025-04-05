@@ -1,8 +1,9 @@
-from typing import Generic, Hashable, TypeVar
+from typing import Generic, Hashable, TypeAlias, TypeVar
 from abc import ABC
 
 
 
+RolCol: TypeAlias = tuple[int, int]
 T = TypeVar("T", bound = Hashable)
 class Channel(ABC, Generic[T]): 
     cons: set[T]
