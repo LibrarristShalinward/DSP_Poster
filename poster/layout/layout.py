@@ -110,8 +110,20 @@ class Layout(_Layout):
     def fig_size(self): 
         """图像大小"""
         return (
-            self.con_pos_x[self.ncol][-1] + self.cfg.cgap / 2 + self.cfg.cgap2border, 
-            - self.con_pos_y[self.nrow - 1][-1] + self.cfg.cgap / 2 + self.cfg.cgap2border, 
+            (
+                self.cfg.cgap2icon * 2 + 
+                self.cfg.icon_size + 
+                self.cfg.cgap * self.inner_con_cap[0]
+            ) * self.ncol + 
+            self.cfg.cgap2border * 2 + 
+            self.cfg.cgap * sum(self.outer_con_cap), 
+            (
+                self.cfg.cgap2icon * 2 + 
+                self.cfg.icon_size + 
+                self.cfg.cgap * self.inner_con_cap[1]
+            ) * self.nrow + 
+            self.cfg.cgap2border + 
+            self.cfg.iborder - self.cfg.cgap2icon, 
         )
 
     # region 可索引属性：坐标
