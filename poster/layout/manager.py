@@ -7,7 +7,7 @@ from typing import Generic, Hashable, TypeVar
 T = TypeVar("T", bound = Hashable)
 class LayoutManager(Generic[T]): 
     def __init__(self, 
-                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
             ): 
         rcs: set[RolCol] = set()
         for sa in con_sets.values(): 
@@ -39,16 +39,16 @@ class LayoutManager(Generic[T]):
     @property
     @method2geitem
     def connect(self, con: Con[T]) -> tuple[list[float], list[float]]: 
-        ((rs, cs), (ra, ca)), r = con
+        ((rs, cs), (ra, ca)), (_, bc) = con
         xs, ys = self.layout.con_start[rs, cs][self.cm.setout_path[con]]
         xa, ya = self.layout.con_end[ra, ca][self.cm.arrive_path[con]]
         yto = self.layout.con_pos_y[ra - 1][- self.cm.to_path[con] - 1]
-        if rs > ra: 
+        if rs == ra - 1 or cs in bc: 
+            return [xs, xa], [ys, yto, ya]
+        elif rs > ra: 
             xt = self.layout.con_pos_x[self.layout.ncol][self.cm.cross_path[con]]
         elif rs == ra: 
             xt = self.layout.con_pos_x[cs][self.cm.cross_path[con]]
-        elif rs == ra - 1: 
-            return [xs, xa], [ys, yto, ya]
         else: 
             xt = self.layout.con_pos_x[-1][self.cm.cross_path[con]]
         return (
