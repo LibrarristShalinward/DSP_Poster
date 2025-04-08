@@ -28,6 +28,7 @@ class BaseLayoutManager(Generic[T]):
         )
 
         self.cm = ChannelManager(
+            # TODO 解决直接跨线时额外分配From线的问题
             self.collector, 
             con_sets
         )
@@ -78,3 +79,18 @@ class ExemptionLayoutManager(BaseLayoutManager[T]):
     def allow_direct(self, con): 
         ((_, cs), _), t = con
         return t in self.exem.keys() and cs in self.exem[t]
+
+
+
+class BlankDirectLayoutManager(BaseLayoutManager[T]): 
+    def __init__(self, 
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
+            ):
+        BaseLayoutManager.__init__(self, con_sets)
+        self._occuoation = np.zeros((self.collector.nrow, self.collector.ncol))
+        self._occuoation[tuple(list(i) for i in zip(*self._icons))] = True
+    
+    def allow_direct(self, con): 
+        ((rs, cs), (ra, _)), _ = con
+        if ra <= rs: return False
+        return not self._occuoation[rs + 1:ra, cs].any()
