@@ -1,20 +1,21 @@
 from .channel import *
 from .layout import Layout
 from typing import Generic, Hashable, TypeVar
+import numpy as np
 
 
 
 T = TypeVar("T", bound = Hashable)
-class LayoutManager(Generic[T]): 
+class BaseLayoutManager(Generic[T]): 
     def __init__(self, 
-                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
             ): 
-        rcs: set[RolCol] = set()
+        self._icons: set[RolCol] = set()
         for sa in con_sets.values(): 
-            rcs = rcs.union(*sa)
+            self._icons = self._icons.union(*sa)
         self.collector = ChannelCollector(
-            max(rc[0] for rc in rcs) + 1, 
-            max(rc[1] for rc in rcs) + 1, 
+            max(rc[0] for rc in self._icons) + 1, 
+            max(rc[1] for rc in self._icons) + 1, 
         )
         for item, (setouts, arrives) in con_sets.items(): 
             self.collector.add_cons(setouts, arrives, item)
@@ -27,9 +28,13 @@ class LayoutManager(Generic[T]):
         )
 
         self.cm = ChannelManager(
+            # TODO 解决直接跨线时额外分配From线的问题
             self.collector, 
             con_sets
         )
+    
+    def allow_direct(self, con: Con[T]) -> bool: 
+        return False
     
     @property
     @method2geitem
@@ -39,16 +44,16 @@ class LayoutManager(Generic[T]):
     @property
     @method2geitem
     def connect(self, con: Con[T]) -> tuple[list[float], list[float]]: 
-        ((rs, cs), (ra, ca)), r = con
+        ((rs, cs), (ra, ca)), _ = con
         xs, ys = self.layout.con_start[rs, cs][self.cm.setout_path[con]]
         xa, ya = self.layout.con_end[ra, ca][self.cm.arrive_path[con]]
         yto = self.layout.con_pos_y[ra - 1][- self.cm.to_path[con] - 1]
-        if rs > ra: 
+        if rs == ra - 1 or self.allow_direct(con): 
+            return [xs, xa], [ys, yto, ya]
+        elif rs > ra: 
             xt = self.layout.con_pos_x[self.layout.ncol][self.cm.cross_path[con]]
         elif rs == ra: 
             xt = self.layout.con_pos_x[cs][self.cm.cross_path[con]]
-        elif rs == ra - 1: 
-            return [xs, xa], [ys, yto, ya]
         else: 
             xt = self.layout.con_pos_x[-1][self.cm.cross_path[con]]
         return (
@@ -60,3 +65,32 @@ class LayoutManager(Generic[T]):
                 ya
             ]
         )
+
+
+
+class ExemptionLayoutManager(BaseLayoutManager[T]): 
+    def __init__(self, 
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
+                exemptions: dict[T, set[int]]
+            ):
+        BaseLayoutManager.__init__(self, con_sets)
+        self.exem = exemptions
+    
+    def allow_direct(self, con): 
+        ((_, cs), _), t = con
+        return t in self.exem.keys() and cs in self.exem[t]
+
+
+
+class BlankDirectLayoutManager(BaseLayoutManager[T]): 
+    def __init__(self, 
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
+            ):
+        BaseLayoutManager.__init__(self, con_sets)
+        self._occuoation = np.zeros((self.collector.nrow, self.collector.ncol))
+        self._occuoation[tuple(list(i) for i in zip(*self._icons))] = True
+    
+    def allow_direct(self, con): 
+        ((rs, cs), (ra, _)), _ = con
+        if ra <= rs: return False
+        return not self._occuoation[rs + 1:ra, cs].any()
