@@ -10,6 +10,7 @@ class BaseLayoutManager(Generic[T]):
     def __init__(self, 
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
             ): 
+        self.con_sets = con_sets
         self._icons: set[RolCol] = set()
         for sa in con_sets.values(): 
             self._icons = self._icons.union(*sa)
