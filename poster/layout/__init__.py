@@ -1,1 +1,1 @@
-from .manager import BaseLayoutManager, BlankDirectLayoutManager, ExemptionLayoutManager
+from .manager import BaseLayoutManager, BlankDirectLayoutManager, ExemptionLayoutManager, RolCol
