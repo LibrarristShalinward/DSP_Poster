@@ -8,9 +8,10 @@ sys.path.append(
 
 from .items import Icon, Connection
 from .layout import BaseLayoutManager, RolCol
-from dsp import Recipe
+from .layout.channel.utils import func2getitem
+from dsp import Recipe, dsp_recipes
 from matplotlib import pyplot as plt
-from typing import Any
+from typing import Any, Callable
 
 
 class Poster: 
@@ -50,3 +51,36 @@ class Poster:
             )
         plt.axis([0, fs[0], -fs[1], 0])
         plt.axis("off")
+
+
+
+__default_rcp_filter: Callable[[Recipe], bool] = lambda rcp: len(rcp.items) and set(rcp.items.keys()) != set(rcp.results.keys()) and not (rcp.id >= 1000 and rcp.id < 3000)
+@func2getitem
+def PosterConstructor(ManagerClass: type[BaseLayoutManager]): 
+    def manager_initer(
+                rcp_filter: Callable[[Recipe], bool] = __default_rcp_filter, 
+                **manager_kwargs
+            ): 
+        def poster_initer(
+                icon_pos: dict[Icon, RolCol], 
+            ): 
+            recipes = {
+                rcp for rcp in dsp_recipes.values() if rcp.all_objs_satisfies(
+                    lambda item: item in icon_pos.keys()
+                ) and rcp_filter(rcp)
+            }
+            con_sets = {
+                rcp: (
+                    set(icon_pos[iidx] for iidx in rcp.items.keys()), 
+                    set(icon_pos[iidx] for iidx in rcp.results.keys())
+                ) for rcp in recipes
+            }
+            return Poster(
+                icon_pos, 
+                ManagerClass(
+                    con_sets, 
+                    **manager_kwargs
+                )
+            )
+        return poster_initer
+    return manager_initer
