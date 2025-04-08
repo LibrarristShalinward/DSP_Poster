@@ -1,5 +1,9 @@
-from . import factory
+from . import dsp_folder, factory
 from enum import Enum
+import os
+
+icon_folder = os.path.join(dsp_folder, r"resources/icon")
+assert os.path.exists(icon_folder)
 
 
 
@@ -50,7 +54,10 @@ class Item:
             ItemType(int(dt["Type"])), 
             dt["Name"], 
             (gidxn // 100, gidxn % 100), 
-            dt["IconName"]
+            os.path.join(
+                icon_folder, 
+                dt["IconName"] + r".png"
+            )
         )
     
     def __repr__(self):
