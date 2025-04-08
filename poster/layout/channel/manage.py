@@ -16,7 +16,7 @@ from typing import Generic, Hashable, TypeAlias, TypeVar
 
 
 T_ = TypeVar("T_", bound = Hashable)
-Con: TypeAlias = tuple[tuple[RolCol, RolCol], tuple[T_, set[int]]]
+Con: TypeAlias = tuple[tuple[RolCol, RolCol], T_]
 
 T = TypeVar("T", bound = Hashable)
 class ChannelManager(Generic[T]): 
@@ -61,38 +61,38 @@ class ChannelManager(Generic[T]):
     @property
     @method2geitem
     def setout_path(self, con: Con[T]) -> RolCol: 
-        ((r, c), _), (it, _) = con
+        ((r, c), _), it = con
         s = self.setouts[r][c]
         return s[it], len(s.channel)
     
     @property
     @method2geitem
     def from_path(self, con: Con[T]) -> int: 
-        ((r, _), _), (it, _) = con
+        ((r, _), _), it = con
         return self.froms[r][it]
 
     @property
     @method2geitem
     def cross_path(self, con: Con[T]) -> int: 
-        ((rs, cs), (ra, _)), (it, bc) = con
-        if rs == ra - 1 or cs in bc: 
-            raise IndexError("直通时无需cross")
-        elif rs > ra: 
+        ((rs, cs), (ra, _)), it = con
+        if rs > ra: 
             return self.meta[it]
         elif rs == ra: 
             return self.gaps[rs][cs][it]
+        elif rs == ra - 1: 
+            raise IndexError("相差一行时无需cross")
         else: 
             return self.trunk[it]
     
     @property
     @method2geitem
     def to_path(self, con: Con[T]) -> int: 
-        (_, (r, _)), (it, _) = con
+        (_, (r, _)), it = con
         return self.tos[r][it]
 
     @property
     @method2geitem
     def arrive_path(self, con: Con[T]) -> RolCol: 
-        (_, (r, c)), (it, _) = con
+        (_, (r, c)), it = con
         s = self.arrives[r][c]
         return s[it], len(s.channel)
