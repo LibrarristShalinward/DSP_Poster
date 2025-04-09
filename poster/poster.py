@@ -1,11 +1,3 @@
-import os, sys
-sys.path.append(
-    os.path.join(
-        os.path.abspath(__file__), 
-        "../"
-    )
-)
-
 from .items import Icon, Connection
 from .layout import BaseLayoutManager, RolCol
 from .layout.channel.utils import func2getitem
@@ -32,6 +24,14 @@ class Poster:
             for s in setouts
             for a in arrives
         }
+    
+    @property
+    def items(self): 
+        return set(self.icon_pos.keys())
+    
+    @property
+    def recipes(self): 
+        return set(self.manager.con_sets.keys())
     
     def draw(self, 
                 rcp_colors: dict[Recipe, Any]
