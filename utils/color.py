@@ -1,7 +1,8 @@
 from dsp import Item, Recipe
-from numpy.typing import NDArray
 from poster import Icon
-from typing import Callable, Iterable, Literal, TypeAlias
+from poster.layout.channel.utils import func2getitem
+from typing import Callable, Hashable, Iterable, Literal, TypeAlias, TypeVar
+import colorsys
 import numpy as np
 
 
@@ -88,8 +89,16 @@ def get_rcp_colors(
         }
     return getter
 
-def icon_color_aranger(icons: dict[Item, Icon]): 
+def icon_color_aranger(
+            icons: dict[Item, Icon], 
+            *transformers: ColorsMapping, 
+            hsv: bool = True
+        ): 
     @get_rcp_colors
     def getter(item: Item) -> Color: 
         return icons[item].main_color / 255.
-    return getter
+    if hsv: transformers = in_hsv[transformers]
+    mapper = colordict_mapper[transformers]
+    def caller(recipes: Iterable[Recipe]): 
+        return mapper(getter(recipes))
+    return caller
