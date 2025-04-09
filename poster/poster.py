@@ -1,14 +1,14 @@
 from .items import Icon, Connection
 from .layout import BaseLayoutManager, RolCol
 from .layout.channel.utils import func2getitem
-from dsp import Recipe, dsp_recipes
+from dsp import Item, Recipe, dsp_recipes
 from matplotlib import pyplot as plt
 from typing import Any, Callable
 
 
 class Poster: 
     def __init__(self, 
-                icon_pos: dict[Icon, RolCol], 
+                icon_pos: dict[Item, RolCol], 
                 manager: BaseLayoutManager[Recipe]
             ):
         self.icon_pos = icon_pos
