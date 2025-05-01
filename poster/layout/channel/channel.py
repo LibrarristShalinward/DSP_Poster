@@ -54,3 +54,6 @@ class FromChannel(Channel[T]):
 
 class ArriveChannel(Channel[T]): 
     """到达通道"""
+    def __init__(self, rc: RolCol, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.rc = rc
