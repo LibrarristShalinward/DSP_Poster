@@ -63,25 +63,15 @@ class SetoutAllocator(ChannelAllocator[SetoutChannel, T]):
         ChannelAllocator.__init__(self, channel, con_map)
     def _alloc(self) -> list[T]: 
         r, c = self.channel.rc
-        tars = {
-            t: max(tos)
-            for t, (_, tos) in self.con_map.items()
-        }
-        value_to_rank = {
-            v: i for i, v in enumerate(
-                sorted(tars.values(), 
-                       key = lambda rc: (
-                            max(r - rc[0] + 1, 0), 
-                            (-rc[0], rc[1]) if rc[1] > c and rc[0] > r else (), 
-                            rc, 
-                        )
-                )
+        def rank_value(t: T): 
+            rc = max(self.con_map[t][1])
+            return(
+                max(r - rc[0] + 1, 0), 
+                (-rc[0], rc[1]) if rc[1] > c and rc[0] > r else (), 
+                rc, 
+                t.__hash__()
             )
-        }
-        return sorted(
-            self.channel.cons, 
-            key = lambda k: value_to_rank[tars[k]]
-        )
+        return sorted(self.channel.cons, key = rank_value)
 
 class ToAllocator(ChannelAllocator[ToChannel, T]): 
     def __init__(self, channel: ToChannel[T], con_map: ConMap[T]):
