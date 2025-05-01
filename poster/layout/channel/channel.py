@@ -29,6 +29,9 @@ class SetoutChannel(Channel[T]):
 
 class ToChannel(Channel[T]): 
     """迁出通道"""
+    def __init__(self, r: int, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.r = r
 
 
 

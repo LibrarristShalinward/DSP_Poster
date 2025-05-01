@@ -34,7 +34,7 @@ class ChannelCollector(Generic[T]):
         self.trunk = TrunkChannel(t)
         self.gaps = [[GapChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
         self.meta = MetaChannel(t)
-        self.tos = [ToChannel(t) for _ in range(self.nrow)]
+        self.tos = [ToChannel(r, t) for r in range(self.nrow)]
         self.arrives = [[ArriveChannel((r, c), t) for c in range(self.ncol)] for r in range(self.nrow)]
     
     def __legal_setout(self, setout: RolCol): 
