@@ -35,8 +35,8 @@ class Canvas:
         ) -> None: 
         plt.fill(
             *round(self.nodes(round.r))[1:-1].T, 
-            linewidth = 0., 
-            color = color, 
+            linewidth = 1., linestyle = "--", 
+            ec = color, fc = tuple(color * .3 + .7) + (.5, ), 
             zorder = zorder, 
             capstyle = "round", 
             joinstyle = "round", 
