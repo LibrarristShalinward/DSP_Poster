@@ -1,5 +1,6 @@
 from .channel import *
 from .layout import Layout
+from functools import cache
 from typing import Generic, Hashable, TypeVar
 import numpy as np
 
@@ -17,6 +18,7 @@ class BaseLayoutManager(Generic[T]):
         self.collector = ChannelCollector(
             max(rc[0] for rc in self._icons) + 1, 
             max(rc[1] for rc in self._icons) + 1, 
+            self.allow_direct
         )
         for item, (setouts, arrives) in con_sets.items(): 
             self.collector.add_cons(setouts, arrives, item)
@@ -29,7 +31,6 @@ class BaseLayoutManager(Generic[T]):
         )
 
         self.cm = ChannelManager(
-            # TODO 解决直接跨线时额外分配From线的问题
             self.collector, 
             con_sets
         )
@@ -74,8 +75,8 @@ class ExemptionLayoutManager(BaseLayoutManager[T]):
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
                 exemptions: dict[T, set[int]]
             ):
-        BaseLayoutManager.__init__(self, con_sets)
         self.exem = exemptions
+        BaseLayoutManager.__init__(self, con_sets)
     
     def allow_direct(self, con): 
         ((_, cs), _), t = con
@@ -86,12 +87,16 @@ class ExemptionLayoutManager(BaseLayoutManager[T]):
 class BlankDirectLayoutManager(BaseLayoutManager[T]): 
     def __init__(self, 
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
-            ):
+            ): 
         BaseLayoutManager.__init__(self, con_sets)
+    
+    @cache
+    def check_occupation(self) -> None: 
         self._occuoation = np.zeros((self.collector.nrow, self.collector.ncol))
         self._occuoation[tuple(list(i) for i in zip(*self._icons))] = True
     
     def allow_direct(self, con): 
+        self.check_occupation()
         ((rs, cs), (ra, _)), _ = con
         if ra <= rs: return False
         return not self._occuoation[rs + 1:ra, cs].any()

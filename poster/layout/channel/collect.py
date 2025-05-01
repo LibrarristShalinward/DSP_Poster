@@ -9,7 +9,7 @@ from .channel import (
     ToChannel, 
     TrunkChannel, 
 )
-from typing import Generic, Hashable, Iterable, TypeVar
+from typing import Callable, Generic, Hashable, Iterable, TypeVar
 
 
 
@@ -24,9 +24,11 @@ class ChannelCollector(Generic[T]):
     arrives: list[list[ArriveChannel[T]]]
     def __init__(self, 
             rows: int, cols: int, 
+            allow_direct: Callable[[T], bool] = lambda con: False, 
             t: type[T] = int
         ):
         self.nrow, self.ncol = rows, cols
+        self.allow_direct = allow_direct
         self.setouts = [[SetoutChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
         self.froms = [FromChannel(t) for _ in range(self.nrow)]
         self.trunk = TrunkChannel(t)
@@ -48,10 +50,11 @@ class ChannelCollector(Generic[T]):
 
     def get_channels(self, 
             setout: RolCol, 
-            arrive: RolCol
+            arrive: RolCol, 
+            direct: bool = False
         ) -> list[Channel[T]]: 
         self.__legal_setout(setout), self.__legal_arrive(arrive)
-        if setout[0] + 1 == arrive[0]: 
+        if setout[0] + 1 == arrive[0] or direct: 
             return [
                 self.setouts[setout[0]][setout[1]], 
                 self.tos[arrive[0]], 
@@ -77,7 +80,10 @@ class ChannelCollector(Generic[T]):
             arrive: RolCol, 
             item: T
         ): 
-        chs = self.get_channels(setout, arrive)
+        chs = self.get_channels(
+            setout, arrive, 
+            self.allow_direct(((setout, arrive), item))
+        )
         for ch in chs: ch + item
     
     def add_cons(self, 
