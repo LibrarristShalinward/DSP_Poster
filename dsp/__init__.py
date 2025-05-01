@@ -1,9 +1,10 @@
 import os
 
 import json
+dsp_folder = os.path.dirname(__file__)
 with open(
         os.path.join(
-            os.path.dirname(__file__), 
+            dsp_folder, 
             r"resources/FractionateEverything.json"
         ), 
         "r"

@@ -99,6 +99,9 @@ class Recipe:
     def __repr__(self):
         return f"{self.name}(#{self.id})【{self.amount2str(self.items)} -{self.rtype}x{self.time}/min-> {self.amount2str(self.results)}】"
     
+    def __hash__(self):
+        return self.id
+    
     def all_objs_satisfies(self, cri: Callable[[Item], bool]) -> bool: 
         for i in self.items.keys(): 
             if not cri(i): return False
