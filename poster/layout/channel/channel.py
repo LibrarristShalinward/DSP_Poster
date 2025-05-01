@@ -21,6 +21,9 @@ class Channel(ABC, Generic[T]):
 
 class SetoutChannel(Channel[T]): 
     """出发通道"""
+    def __init__(self, rc: RolCol, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.rc = rc
 
 
 
