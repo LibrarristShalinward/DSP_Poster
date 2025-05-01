@@ -51,6 +51,15 @@ class Poster:
             )
         plt.axis([0, fs[0], -fs[1], 0])
         plt.axis("off")
+    
+    def grid_y(self): 
+        """横向栅格辅助线"""
+        layout = self.manager.layout
+        fs = layout.fig_size
+        for i in range(layout.nrow): 
+            clu = layout.con_pos_y[i]
+            for j in range(layout.inner_con_cap[1]): 
+                plt.plot([0, fs[0]], [clu[j], clu[j]], color = "black", linewidth=0.5)
 
 
 
