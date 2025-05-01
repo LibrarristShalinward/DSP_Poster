@@ -294,4 +294,24 @@ class Layout(_Layout):
             """
             return x0 + self._con_icon_node[idx], y0
         return wrapper
+    
+    @property
+    @method2geitem
+    def canvas(self, vertices: tuple[int, int, int, int]) -> tuple[float, float, float, float]: 
+        """根据icon索引确定一个画布范围
+
+        Args:
+            vertices (tuple[int, int, int, int]): icon索引(上，下, 左, 右)
+
+        Returns:
+            tuple[float, float, float, float]: 画布范围(左, 右，下，上)
+        """
+        gap = self.cfg.icon_size / 2.
+        t, b, l, r = vertices
+        return (
+            self.icon_pos[0, l][0] - gap,
+            self.icon_pos[0, r][0] + gap,
+            self.icon_pos[b, 0][1] - gap,
+            self.icon_pos[t, 0][1] + gap
+        )
     # endregion
