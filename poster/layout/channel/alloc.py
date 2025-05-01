@@ -91,8 +91,8 @@ class ToAllocator(ChannelAllocator[ToChannel, T]):
             c = min(c_ for r_, c_ in self.con_map[t][1] if r_ == r )
             rc = max(self.con_map[t][0])
             return(
-                c, 
                 max(rc[0] - r + 1, 0), 
+                c, 
                 (-rc[0], rc[1]) if rc[1] > c and rc[0] < r else (), 
                 rc, 
                 t.__hash__()
