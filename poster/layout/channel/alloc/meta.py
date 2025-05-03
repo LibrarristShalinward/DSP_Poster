@@ -12,5 +12,6 @@ class _Base(MetaAllocator[T]): pass
 
 _meta_alloc_dict: AllocDict[MetaAllocator] = {
     DFT: _Base, 
-    DRC: _Base
+    DRC: _Base, 
+    GLB: _Base
 }
