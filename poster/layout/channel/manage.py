@@ -1,14 +1,4 @@
-from .alloc import (
-    ArriveAllocator, 
-    ConMap, 
-    FromAllocator, 
-    GapAllocator, 
-    MetaAllocator, 
-    RolCol, 
-    SetoutAllocator, 
-    ToAllocator, 
-    TrunkAllocator, 
-)
+from .alloc import *
 from .collect import ChannelCollector
 from .utils import method2geitem
 from typing import Generic, Hashable, TypeAlias, TypeVar
@@ -27,32 +17,45 @@ class ChannelManager(Generic[T]):
     meta: MetaAllocator[T]
     tos: list[ToAllocator[T]]
     arrives: list[list[ArriveAllocator[T]]]
-    def __init__(self, collector: ChannelCollector, con_map: ConMap[T]): 
+    def __init__(self, collector: ChannelCollector, con_map: ConMap[T], alloc_mode: AllocMode = DFT): 
+        policy = AllocPolicy(alloc_mode)
+
+        __allc = policy[SetoutAllocator]
         self.setouts = [
             [
-                SetoutAllocator(
+                __allc(
                     c, con_map
                 ) for c in cs
             ] for cs in collector.setouts
         ]
+
+        __allc = policy[FromAllocator]
         self.froms = [
-            FromAllocator(c, con_map) for c in collector.froms
+            __allc(c, con_map) for c in collector.froms
         ]
-        self.trunk = TrunkAllocator(collector.trunk, con_map)
+
+        self.trunk = policy[TrunkAllocator](collector.trunk, con_map)
+
+        __allc = policy[GapAllocator]
         self.gaps = [
             [
-                GapAllocator(
+                __allc(
                     c, con_map
                 ) for c in cs
             ] for cs in collector.gaps
         ]
-        self.meta = MetaAllocator(collector.meta, con_map)
+
+        self.meta = policy[MetaAllocator](collector.meta, con_map)
+
+        __allc = policy[ToAllocator]
         self.tos = [
-            ToAllocator(c, con_map) for c in collector.tos
+            __allc(c, con_map) for c in collector.tos
         ]
+
+        __allc = policy[ArriveAllocator]
         self.arrives = [
             [
-                ArriveAllocator(
+                __allc(
                     c, con_map
                 ) for c in cs
             ] for cs in collector.arrives
