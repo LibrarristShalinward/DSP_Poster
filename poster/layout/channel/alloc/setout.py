@@ -19,10 +19,23 @@ class _Direct(_Base[T]):
                 t.__hash__()
             )
         return sorted(self.channel.cons, key = rank_value)
+class _Global(_Base[T]): 
+    def _alloc(self) -> list[T]: 
+        r, c = self.channel.rc
+        def rank_value(t: T): 
+            rc = min(self.con_map[t][1])
+            return(
+                rc[0] <= r, rc[0] == r, 
+                - rc[0] if rc[0] >= r else rc[0], 
+                - rc[1] if rc[0] == r else rc[1],
+                t.__hash__()
+            )
+        return sorted(self.channel.cons, key = rank_value)
 
 
 
 _setout_alloc_dict: AllocDict[SetoutAllocator] = {
     DFT: _Base, 
-    DRC: _Direct
+    DRC: _Direct, 
+    GLB: _Global
 }

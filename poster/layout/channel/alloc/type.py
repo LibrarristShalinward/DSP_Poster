@@ -10,8 +10,11 @@ class AllocMode(Enum):
     """默认策略"""
     DRC = 1
     """直连策略"""
+    GLB = 2
+    """全局图一般策略"""
 DFT = AllocMode.DFT
 DRC = AllocMode.DRC
+GLB = AllocMode.GLB
 
 
 
