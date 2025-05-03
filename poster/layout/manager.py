@@ -10,6 +10,7 @@ T = TypeVar("T", bound = Hashable)
 class BaseLayoutManager(Generic[T]): 
     def __init__(self, 
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
+                alloc_mode: AllocMode = DFT
             ): 
         self.con_sets = con_sets
         self._icons: set[RolCol] = set()
@@ -32,7 +33,8 @@ class BaseLayoutManager(Generic[T]):
 
         self.cm = ChannelManager(
             self.collector, 
-            con_sets
+            con_sets, 
+            alloc_mode
         )
     
     def allow_direct(self, con: Con[T]) -> bool: 
@@ -73,10 +75,11 @@ class BaseLayoutManager(Generic[T]):
 class ExemptionLayoutManager(BaseLayoutManager[T]): 
     def __init__(self, 
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
-                exemptions: dict[T, set[int]]
+                exemptions: dict[T, set[int]], 
+                alloc_mode: AllocMode = DRC
             ):
         self.exem = exemptions
-        BaseLayoutManager.__init__(self, con_sets)
+        BaseLayoutManager.__init__(self, con_sets, alloc_mode)
     
     def allow_direct(self, con): 
         ((_, cs), _), t = con
@@ -86,9 +89,10 @@ class ExemptionLayoutManager(BaseLayoutManager[T]):
 
 class BlankDirectLayoutManager(BaseLayoutManager[T]): 
     def __init__(self, 
-                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]]
+                con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
+                alloc_mode: AllocMode = DRC
             ): 
-        BaseLayoutManager.__init__(self, con_sets)
+        BaseLayoutManager.__init__(self, con_sets, alloc_mode)
     
     @cache
     def check_occupation(self) -> None: 
