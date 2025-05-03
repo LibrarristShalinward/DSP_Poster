@@ -30,7 +30,7 @@ class ChannelCollector(Generic[T]):
         self.nrow, self.ncol = rows, cols
         self.allow_direct = allow_direct
         self.setouts = [[SetoutChannel((r, c), t) for c in range(self.ncol)] for r in range(self.nrow)]
-        self.froms = [FromChannel(t) for _ in range(self.nrow)]
+        self.froms = [FromChannel(r, t) for r in range(self.nrow)]
         self.trunk = TrunkChannel(t)
         self.gaps = [[GapChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
         self.meta = MetaChannel(t)
