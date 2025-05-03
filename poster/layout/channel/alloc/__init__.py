@@ -1,3 +1,4 @@
+from .alloc import AllocPolicy
 from .arrive import ArriveAllocator
 from .base import ConMap, RolCol
 from .frm import FromAllocator

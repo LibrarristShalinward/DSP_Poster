@@ -1,13 +1,13 @@
 from ..channel import SetoutChannel
-from .base import ChannelAllocator, ConMap
-from typing import Hashable, TypeVar
+from .base import ChannelAllocator
+from typing import Hashable, TypeAlias, TypeVar
 
 
 
 T = TypeVar("T", bound = Hashable)
-class SetoutAllocator(ChannelAllocator[SetoutChannel, T]): 
-    def __init__(self, channel: SetoutChannel[T], con_map: ConMap[T]):
-        ChannelAllocator.__init__(self, channel, con_map)
+SetoutAllocator: TypeAlias = ChannelAllocator[SetoutChannel[T], T]
+class _Base(SetoutAllocator[T]): pass
+class _Direct(_Base[T]): 
     def _alloc(self) -> list[T]: 
         r, c = self.channel.rc
         def rank_value(t: T): 
@@ -19,3 +19,10 @@ class SetoutAllocator(ChannelAllocator[SetoutChannel, T]):
                 t.__hash__()
             )
         return sorted(self.channel.cons, key = rank_value)
+
+
+
+_setout_alloc_dict: dict[str, type[SetoutAllocator]] = {
+    "": _Base, 
+    "direct": _Direct
+}

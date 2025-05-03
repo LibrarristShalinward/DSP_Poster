@@ -1,12 +1,16 @@
 from ..channel import FromChannel
-from .base import ChannelAllocator, ConMap
-from typing import Hashable, TypeVar
+from .base import ChannelAllocator
+from typing import Hashable, TypeAlias, TypeVar
 
 
 
 T = TypeVar("T", bound = Hashable)
-class FromAllocator(ChannelAllocator[FromChannel, T]): 
-    def __init__(self, channel: FromChannel[T], con_map: ConMap[T]):
-        ChannelAllocator.__init__(self, channel, con_map)
-    def _alloc(self) -> list[T]:
-        return ChannelAllocator._alloc(self)
+FromAllocator: TypeAlias = ChannelAllocator[FromChannel[T], T]
+class _Base(FromAllocator[T]): pass
+
+
+
+_from_alloc_dict: dict[str, type[FromAllocator]] = {
+    "": _Base, 
+    "direct": _Base
+}

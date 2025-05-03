@@ -1,12 +1,16 @@
 from ..channel import TrunkChannel
-from .base import ChannelAllocator, ConMap
-from typing import Hashable, TypeVar
+from .base import ChannelAllocator
+from typing import Hashable, TypeAlias, TypeVar
 
 
 
 T = TypeVar("T", bound = Hashable)
-class TrunkAllocator(ChannelAllocator[TrunkChannel, T]): 
-    def __init__(self, channel: TrunkChannel[T], con_map: ConMap[T]):
-        ChannelAllocator.__init__(self, channel, con_map)
-    def _alloc(self) -> list[T]:
-        return ChannelAllocator._alloc(self)
+TrunkAllocator: TypeAlias = ChannelAllocator[TrunkChannel[T], T]
+class _Base(TrunkAllocator[T]): pass
+
+
+
+_trunk_alloc_dict: dict[str, type[TrunkAllocator]] = {
+    "": _Base, 
+    "direct": _Base
+}

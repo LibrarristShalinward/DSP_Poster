@@ -1,13 +1,13 @@
 from ..channel import ArriveChannel
-from .base import ChannelAllocator, ConMap
-from typing import Hashable, TypeVar
+from .base import ChannelAllocator
+from typing import Hashable, TypeAlias, TypeVar
 
 
 
 T = TypeVar("T", bound = Hashable)
-class ArriveAllocator(ChannelAllocator[ArriveChannel, T]): 
-    def __init__(self, channel: ArriveChannel[T], con_map: ConMap[T]):
-        ChannelAllocator.__init__(self, channel, con_map)
+ArriveAllocator: TypeAlias = ChannelAllocator[ArriveChannel[T], T]
+class _Base(ArriveAllocator[T]): pass
+class _Direct(_Base[T]): 
     def _alloc(self) -> list[T]: 
         r, c = self.channel.rc
         def rank_value(t: T): 
@@ -19,3 +19,10 @@ class ArriveAllocator(ChannelAllocator[ArriveChannel, T]):
                 t.__hash__()
             )
         return sorted(self.channel.cons, key = rank_value)
+
+
+
+_arrive_alloc_dict: dict[str, type[ArriveAllocator]] = {
+    "": _Base, 
+    "direct": _Direct
+}
