@@ -1,6 +1,6 @@
 from ..channel import ArriveChannel
-from .base import ChannelAllocator
-from typing import Hashable, TypeAlias, TypeVar
+from .type import *
+from typing import Hashable
 
 
 
@@ -22,7 +22,7 @@ class _Direct(_Base[T]):
 
 
 
-_arrive_alloc_dict: dict[str, type[ArriveAllocator]] = {
-    "": _Base, 
-    "direct": _Direct
+_arrive_alloc_dict: AllocDict[ArriveAllocator] = {
+    DFT: _Base, 
+    DRC: _Direct
 }

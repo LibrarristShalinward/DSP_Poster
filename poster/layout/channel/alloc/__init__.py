@@ -7,3 +7,4 @@ from .meta import MetaAllocator
 from .setout import SetoutAllocator
 from .to import ToAllocator
 from .trunk import TrunkAllocator
+from .type import *

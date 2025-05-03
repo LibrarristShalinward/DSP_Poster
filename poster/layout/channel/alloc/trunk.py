@@ -1,6 +1,6 @@
 from ..channel import TrunkChannel
-from .base import ChannelAllocator
-from typing import Hashable, TypeAlias, TypeVar
+from .type import *
+from typing import Hashable
 
 
 
@@ -10,7 +10,7 @@ class _Base(TrunkAllocator[T]): pass
 
 
 
-_trunk_alloc_dict: dict[str, type[TrunkAllocator]] = {
-    "": _Base, 
-    "direct": _Base
+_trunk_alloc_dict: AllocDict[TrunkAllocator] = {
+    DFT: _Base, 
+    DRC: _Base
 }

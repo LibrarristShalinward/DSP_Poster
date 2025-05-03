@@ -1,6 +1,6 @@
 from ..channel import MetaChannel
-from .base import ChannelAllocator
-from typing import Hashable, TypeAlias, TypeVar
+from .type import *
+from typing import Hashable
 
 
 
@@ -10,7 +10,7 @@ class _Base(MetaAllocator[T]): pass
 
 
 
-_meta_alloc_dict: dict[str, type[MetaAllocator]] = {
-    "": _Base, 
-    "direct": _Base
+_meta_alloc_dict: AllocDict[MetaAllocator] = {
+    DFT: _Base, 
+    DRC: _Base
 }

@@ -6,13 +6,13 @@ from .meta import MetaAllocator, _meta_alloc_dict
 from .setout import SetoutAllocator, _setout_alloc_dict
 from .to import ToAllocator, _to_alloc_dict
 from .trunk import TrunkAllocator, _trunk_alloc_dict
-from typing import TypeVar
+from .type import *
 
 
 
 CT = TypeVar("CT", bound = ChannelAllocator)
 class AllocPolicy: 
-    def __init__(self, tag: str):
+    def __init__(self, tag: AllocMode):
         self.tag = tag
     
     def __getitem__(self, channel: type[CT]) -> type[CT]: 

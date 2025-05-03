@@ -1,6 +1,6 @@
 from ..channel import FromChannel
-from .base import ChannelAllocator
-from typing import Hashable, TypeAlias, TypeVar
+from .type import *
+from typing import Hashable
 
 
 
@@ -10,7 +10,7 @@ class _Base(FromAllocator[T]): pass
 
 
 
-_from_alloc_dict: dict[str, type[FromAllocator]] = {
-    "": _Base, 
-    "direct": _Base
+_from_alloc_dict: AllocDict[FromAllocator] = {
+    DFT: _Base, 
+    DRC: _Base
 }

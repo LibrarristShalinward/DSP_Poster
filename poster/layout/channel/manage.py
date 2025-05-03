@@ -17,7 +17,7 @@ class ChannelManager(Generic[T]):
     meta: MetaAllocator[T]
     tos: list[ToAllocator[T]]
     arrives: list[list[ArriveAllocator[T]]]
-    def __init__(self, collector: ChannelCollector, con_map: ConMap[T], alloc_mode: str = "direct"): 
+    def __init__(self, collector: ChannelCollector, con_map: ConMap[T], alloc_mode: AllocMode = DFT): 
         policy = AllocPolicy(alloc_mode)
 
         __allc = policy[SetoutAllocator]

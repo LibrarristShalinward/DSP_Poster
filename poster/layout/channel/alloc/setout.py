@@ -1,6 +1,6 @@
 from ..channel import SetoutChannel
-from .base import ChannelAllocator
-from typing import Hashable, TypeAlias, TypeVar
+from .type import *
+from typing import Hashable
 
 
 
@@ -22,7 +22,7 @@ class _Direct(_Base[T]):
 
 
 
-_setout_alloc_dict: dict[str, type[SetoutAllocator]] = {
-    "": _Base, 
-    "direct": _Direct
+_setout_alloc_dict: AllocDict[SetoutAllocator] = {
+    DFT: _Base, 
+    DRC: _Direct
 }
