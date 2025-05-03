@@ -10,7 +10,7 @@ T = TypeVar("T", bound = Hashable)
 class BaseLayoutManager(Generic[T]): 
     def __init__(self, 
                 con_sets: dict[T, tuple[set[RolCol], set[RolCol]]], 
-                alloc_mode: AllocMode = DFT
+                alloc_mode: AllocMode = GLB
             ): 
         self.con_sets = con_sets
         self._icons: set[RolCol] = set()
