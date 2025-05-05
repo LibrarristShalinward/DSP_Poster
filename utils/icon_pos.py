@@ -38,7 +38,7 @@ class IconPos:
     def unpack(self): 
         unpack: dict[int, IconRolCol] = {}
         for k, v in self.data.items(): 
-            if isinstance(k, int): 
+            if isinstance(k, int) or isinstance(k, str): 
                 unpack[k] = v
             else: 
                 for ke, ve in k.unpack.items(): 
@@ -50,12 +50,15 @@ class IconPos:
         ip_dict: dict[str, IconPos] = {}
 
         def add_ip(name: str): 
-            init_dict: dict[IconPos | int, IconRolCol] = {}
+            init_dict: dict[IconPos | int | str, IconRolCol] = {}
             for k, v in raw_dict[name].items(): 
                 try: 
                     idk = int(k)
-                except ValueError:
-                    idk = get_ip(k)
+                except ValueError: 
+                    if isinstance(k, str) and k.startswith("$"): 
+                        idk = k[1:]
+                    else: 
+                        idk = get_ip(k)
                 init_dict[idk] = IconRolCol.parse_str(v)
             ip_dict[name] = IconPos(init_dict)
         

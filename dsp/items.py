@@ -66,11 +66,10 @@ class Item:
     def __hash__(self):
         return self.id
 
-dsp_items = {
-    it.id: it for it in sorted(
-        [
-            Item.from_dict(i) for i in factory["items"]
-        ], 
-        key = lambda it: it.id
-    )
-}
+__all_items = sorted(
+    [
+        Item.from_dict(i) for i in factory["items"]
+    ], 
+    key = lambda it: it.id
+)
+dsp_items = {it.id: it for it in __all_items} | {it.name: it for it in __all_items}
