@@ -11,6 +11,7 @@ class Poster:
                 icon_pos: dict[Item, RolCol], 
                 manager: BaseLayoutManager[Recipe], 
                 targets: list[Item] = [], 
+                tar_search_exception: set[Item] = set()
             ):
         self.icon_pos = icon_pos
         self.manager = manager
@@ -25,6 +26,7 @@ class Poster:
             for s in setouts
             for a in arrives
         }
+        self.tar_ex = tar_search_exception
         self.canvases = [
             (
                 Canvas(
@@ -65,7 +67,7 @@ class Poster:
             tmp_.clear()
             for f, t in from_tos: 
                 if t & tmp: 
-                    tmp_ |= f - depends
+                    tmp_ |= f - depends - self.tar_ex
         return depends | tmp
     
     def region(self, item: Item): 
