@@ -37,23 +37,18 @@ class ChannelCollector(Generic[T]):
         self.tos = [ToChannel(r, t) for r in range(self.nrow)]
         self.arrives = [[ArriveChannel((r, c), t) for c in range(self.ncol)] for r in range(self.nrow)]
     
-    def __legal_setout(self, setout: RolCol): 
-        if setout[0] < 0 or setout[0] >= self.nrow: 
+    def __legal_rc(self, rc: RolCol): 
+        r, c = rc
+        if r < 0 or r >= self.nrow: 
             raise IndexError(f"Therer's only {self.nrow} rows. ")
-        if setout[1] < 0 or setout[1] >= self.ncol: 
+        if c < 0 or c >= self.ncol: 
             raise IndexError(f"Therer's only {self.ncol} colonms. ")
-    
-    def __legal_arrive(self, arrive: RolCol): 
-        self.__legal_setout(arrive)
-        if arrive[0] == 0: 
-            raise IndexError(r"Arriving in first row is not allowed. ")
-
     def get_channels(self, 
             setout: RolCol, 
             arrive: RolCol, 
             direct: bool = False
         ) -> list[Channel[T]]: 
-        self.__legal_setout(setout), self.__legal_arrive(arrive)
+        self.__legal_rc(setout), self.__legal_rc(arrive)
         if setout[0] + 1 == arrive[0] or direct: 
             return [
                 self.setouts[setout[0]][setout[1]], 
@@ -122,3 +117,7 @@ class ChannelCollector(Generic[T]):
     @property
     def right_cap(self) -> int: 
         return len(self.meta)
+
+    @property
+    def top_cap(self) -> int: 
+        return len(self.tos[0].cons)
