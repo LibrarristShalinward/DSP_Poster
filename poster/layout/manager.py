@@ -28,7 +28,7 @@ class BaseLayoutManager(Generic[T]):
             self.collector.nrow, 
             self.collector.ncol, 
             (self.collector.gap_cap, self.collector.inner_cap), 
-            (self.collector.left_cap, self.collector.right_cap)
+            (self.collector.left_cap, self.collector.right_cap, self.collector.top_cap)
         )
 
         self.cm = ChannelManager(

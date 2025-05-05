@@ -45,7 +45,7 @@ class _Layout:
                 icon_row: int, 
                 icon_col: int,
                 inner_con_cap: tuple[int, int], 
-                outer_con_cap: tuple[int, int], 
+                outer_con_cap: tuple[int, int, int], 
                 cfg: LayoutConfig = cfg
             ): 
         """
@@ -60,6 +60,7 @@ class _Layout:
             outer_con_cap (tuple[int, int]):
                 - 最左一列图标与左边界之间的连接线数量
                 - 最右一列图标与右边界之间的连接线数量
+                - 第一行图标与上边界之间的连接线数量
             cfg (LayoutConfig): 布局配置类，默认为cfg
         """
         # region 基本属性
@@ -87,7 +88,7 @@ class _Layout:
         # region 计算属性: 图标坐标
         self.icon_pos0 = (
             self.cfg.cgap2border + self.cfg.cgap * self.outer_con_cap[0] + self.cfg.cgap2icon + self.cfg.icon_size / 2., 
-            - (self.cfg.iborder + self.cfg.icon_size / 2.)
+            - (self.cfg.cgap2border + self.cfg.cgap * self.outer_con_cap[2] + self.cfg.cgap2icon + self.cfg.icon_size / 2.)
             # 为什么取负？因为y上为正方向，但图标向下排列，所以y坐标要取负
         )
         """左上角图标中心点坐标"""
@@ -122,8 +123,8 @@ class Layout(_Layout):
                 self.cfg.icon_size + 
                 self.cfg.cgap * self.inner_con_cap[1]
             ) * self.nrow + 
-            self.cfg.cgap2border + 
-            self.cfg.iborder - self.cfg.cgap2icon, 
+            self.cfg.cgap2border * 2 + 
+            self.cfg.cgap * self.outer_con_cap[2]
         )
 
     # region 可索引属性：坐标
@@ -214,9 +215,15 @@ class Layout(_Layout):
             float: 能返回对应簇内所有y坐标的可索引对象
         """
         # 合法性检查
-        if idx >= self.nrow or idx < 0:
-            raise IndexError(f"Row index {idx} out of range (0-{self.nrow - 1})")
-        y0 = self.icon_pos[idx, 0][1] - self.cfg.con_pos0
+        if idx == -1: # 第一行图标下方的连接线为第0簇
+            y0 = - self.cfg.con_cl0_pos0
+            cap = self.outer_con_cap[2]
+        elif idx >= 0 and idx < self.nrow: # 最后一行图标下方的连接线为第nrow-1簇
+            y0 = self.icon_pos[idx, 0][1] - self.cfg.con_pos0
+            cap = self.inner_con_cap[1]
+        else: 
+            raise IndexError(f"Row index {idx} out of range (-1-{self.nrow - 1})")
+        
         @func2getitem
         def wrapper(idx: int) -> float: 
             """
@@ -227,7 +234,7 @@ class Layout(_Layout):
             Returns:
                 float: 连接线y坐标
             """
-            return y0 - (idx % self.inner_con_cap[1]) * self.cfg.cgap
+            return y0 - (idx % cap) * self.cfg.cgap
         return wrapper
     
     @property
