@@ -21,11 +21,17 @@ class Channel(ABC, Generic[T]):
 
 class SetoutChannel(Channel[T]): 
     """出发通道"""
+    def __init__(self, rc: RolCol, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.rc = rc
 
 
 
 class ToChannel(Channel[T]): 
     """迁出通道"""
+    def __init__(self, r: int, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.r = r
 
 
 
@@ -46,8 +52,14 @@ class MetaChannel(Channel[T]):
 
 class FromChannel(Channel[T]): 
     """迁入通道"""
+    def __init__(self, r: int, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.r = r
 
 
 
 class ArriveChannel(Channel[T]): 
     """到达通道"""
+    def __init__(self, rc: RolCol, t: type[T] = int): 
+        Channel.__init__(self, t)
+        self.rc = rc

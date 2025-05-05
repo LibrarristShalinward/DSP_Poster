@@ -29,13 +29,13 @@ class ChannelCollector(Generic[T]):
         ):
         self.nrow, self.ncol = rows, cols
         self.allow_direct = allow_direct
-        self.setouts = [[SetoutChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
-        self.froms = [FromChannel(t) for _ in range(self.nrow)]
+        self.setouts = [[SetoutChannel((r, c), t) for c in range(self.ncol)] for r in range(self.nrow)]
+        self.froms = [FromChannel(r, t) for r in range(self.nrow)]
         self.trunk = TrunkChannel(t)
         self.gaps = [[GapChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
         self.meta = MetaChannel(t)
-        self.tos = [ToChannel(t) for _ in range(self.nrow)]
-        self.arrives = [[ArriveChannel(t) for __ in range(self.ncol)] for _ in range(self.nrow)]
+        self.tos = [ToChannel(r, t) for r in range(self.nrow)]
+        self.arrives = [[ArriveChannel((r, c), t) for c in range(self.ncol)] for r in range(self.nrow)]
     
     def __legal_setout(self, setout: RolCol): 
         if setout[0] < 0 or setout[0] >= self.nrow: 
